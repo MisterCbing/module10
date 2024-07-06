@@ -12,14 +12,14 @@ class Customer(Thread):
     def service(self, tab):
         tab.is_busy = True
         i = self.cafe.q.get()
-        print(f'Посетитель {i} сел за стол {tab.number}')
+        print(f'Посетитель номер {i} сел за стол {tab.number}')
         sleep(5)
-        print(f'Посетитель {i} покушал и ушёл')
+        print(f'Посетитель номер {i} покушал и ушёл')
         tab.is_busy = False
 
     def run(self):
         if self.cafe.free_tables():
-            print(f'Посетитель {self.number} встал в очередь')
+            print(f'Посетитель номер {self.number} ожидает свободный стол')
             # self.cafe.q.put(self.number)
         while True:
             if not self.cafe.free_tables():
@@ -48,14 +48,13 @@ class Cafe:
 
     def customer_arrival(self):
         for i in range(1, 21):
-            print(f'Прибыл посетитель №{i}')
+            print(f'Посетитель номер {i} прибыл')
             self.serve_customer(i)
             sleep(1)
 
     def serve_customer(self, cus):
-        self.cc.append(Customer(self, cus))
         self.q.put(cus)
-        self.cc[-1].start()
+        Customer(self, cus).start()
 
     def free_tables(self):
         return all(map(lambda x: x.is_busy, self.tables))
